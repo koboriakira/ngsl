@@ -5,6 +5,8 @@ pip install ngsl
 ```
 
 ```python
+from ngsl import ngsl
+
 # return True
 ngsl.include('smile')
 
