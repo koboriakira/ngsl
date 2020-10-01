@@ -1,5 +1,6 @@
 from typing import Optional, List, Set
-from ngsl.inverted_dictionary import INVERTED_DICTIONARY, DICTIONARY
+from ngsl.inverted_dictionary import INVERTED_DICTIONARY
+from ngsl.dictionary import DICTIONARY
 
 
 def include(word: str) -> bool:
