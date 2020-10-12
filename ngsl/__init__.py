@@ -3,8 +3,9 @@
   * New Service General List(NGSL)
   * Using this module, you can check if the word is NGSL or not, etc.
 """
-from ngsl.inverted_supplemental import INVERTED_SUPPLEMENTAL
 from typing import Optional, List
+from ngsl.rank import RANK_DICT
+from ngsl.inverted_supplemental import INVERTED_SUPPLEMENTAL
 from ngsl.inverted_dictionary import INVERTED_DICTIONARY
 from ngsl.dictionary import DICTIONARY
 from ngsl.result import Result
@@ -63,12 +64,12 @@ def classify(words: List[str], include_supplemental: bool = False) -> Result:
     ngsl_words, not_ngsl_words = [], []
     for word in words:
         if include(word=word, include_supplemental=include_supplemental):
-            ngsl_words.append(word)
+            ngsl_words.append([word, get_rank(word=word)])
         else:
             not_ngsl_words.append(word)
     return Result(
-        ngsl_word_list=ngsl_words,
-        not_ngsl_word_list=not_ngsl_words)
+        ngsl_words=ngsl_words,
+        not_ngsl_words=not_ngsl_words)
 
 
 def get_infinitiv_list(
@@ -105,3 +106,16 @@ def all_infinitiv() -> List[str]:
             ["the", "be", "and", ...]
     """
     return DICTIONARY.keys()
+
+
+def get_rank(word: str) -> int:
+    """
+    Return the NGSL rank
+
+    Returns:
+        int : return -1 if the word is not in NGSL
+    Example:
+        >>> ngsl.get_rank("and")
+            3
+    """
+    return RANK_DICT[word] if word in RANK_DICT else -1
