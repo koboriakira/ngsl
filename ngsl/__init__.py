@@ -1,0 +1,96 @@
+"""ngsl
+
+  * New Service General List(NGSL)
+  * Using this module, you can check if the word is NGSL or not, etc.
+"""
+from typing import Optional, List
+from ngsl.inverted_dictionary import INVERTED_DICTIONARY
+from ngsl.dictionary import DICTIONARY
+from ngsl.result import Result
+
+
+def include(word: str) -> bool:
+    """
+    Return if word is in NGSL
+
+    Args:
+        word (str) : word
+    Returns:
+        bool: return True if word in NGSL
+    Example:
+        >>> ngsl.include("smiles")
+            True
+    """
+    return word in INVERTED_DICTIONARY
+
+
+def get_infinitiv(word: str) -> Optional[str]:
+    """
+    Return the infinitiv of the word
+
+    Args:
+        word (str) : word
+    Returns:
+        Optional[str]: infinitiv
+    Example:
+        >>> ngsl.infinitiv("smiles")
+            smile
+    """
+    return INVERTED_DICTIONARY[word] if include(word) else None
+
+
+def classify(words: List[str]) -> Result:
+    """
+    Classify args to the word list of NGSL, the one of NOT NGSL
+
+    Args:
+        words (List[str]) : Word list
+    Returns:
+        Result: Result has fields, ngsl_words, not_ngsl_words
+    Example:
+        >>> ngsl.classify(["smile", "snapback"])
+            Result(ngsl_words=["smile"], not_ngsl_words=["snapback"])
+    """
+    ngsl_words, not_ngsl_words = [], []
+    for word in words:
+        if include(word):
+            ngsl_words.append(word)
+        else:
+            not_ngsl_words.append(word)
+    return Result(
+        ngsl_word_list=ngsl_words,
+        not_ngsl_word_list=not_ngsl_words)
+
+
+def get_infinitiv_list(words: List[str]) -> List[str]:
+    """
+    Return the infinitiv of the word
+
+    Args:
+        words (List[str]) : Word list
+    Returns:
+        List[str] : infinitiv words
+    Example:
+        >>> ngsl.get_infinitiv_list(["smiles", "am", "snapback"])
+            ["smile", "be"]
+    """
+    result = list(set(_sub_get_infinitiv_list(words)))
+    return list(filter(lambda r: r is not None, result))
+
+
+def _sub_get_infinitiv_list(words):
+    for word in words:
+        yield get_infinitiv(word=word)
+
+
+def all_infinitiv() -> List[str]:
+    """
+    Return all word that belongs to NGSL.
+
+    Returns:
+        List[str] : NGSL words
+    Example:
+        >>> ngsl.all_infinitiv()
+            ["the", "be", "and", ...]
+    """
+    return DICTIONARY.keys()
