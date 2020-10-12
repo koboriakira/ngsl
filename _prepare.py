@@ -9,7 +9,7 @@ def prepare():
     dictionary: Dict[str, List[str]] = {}
     inverted_dictionary: Dict[str, str] = {}
 
-    with open('ngsl_words.csv') as f:
+    with open('./csv/ngsl_words.csv') as f:
         reader = csv.reader(f)
         for row in reader:
             # 言葉の原形
@@ -23,7 +23,7 @@ def prepare():
     # print(dictionary)
     # print(inverted_dictionary)
 
-    with open('ngsl_word_rank.csv') as f:
+    with open('./csv/ngsl_word_rank.csv') as f:
         reader = csv.reader(f)
         rank_dict: Dict[str, int] = {}
         for row in reader:
@@ -33,9 +33,10 @@ def prepare():
 
         # print(rank_dict)
 
-    with open('supplemental.csv') as f:
+    with open('./csv/supplemental.csv') as f:
         reader = csv.reader(f)
-        supplemental = {}
+        supplemental: Dict[str, List[str]] = {}
+        inverted_supplemental: Dict[str, str] = {}
         for row in reader:
             # 言葉の原形
             infinitiv = row[0]
@@ -43,8 +44,10 @@ def prepare():
                 if infinitiv not in supplemental:
                     supplemental[infinitiv] = []
                 supplemental[infinitiv].append(word)
+                inverted_supplemental[word] = infinitiv
 
-        print(supplemental)
+        # print(supplemental)
+        print(inverted_supplemental)
 
 
 prepare()
