@@ -24,7 +24,13 @@ def test_get_rank():
 
 
 def test_classify():
-    words = ["and", "the", "snapback"]
+    words = ["smiles", "and", "the", "snapback", "1st"]
     result = ngsl.classify(words=words)
-    assert result.ngsl_words == ["the", "and"]
+    assert result.ngsl_words == ["the", "and", "smile"]
     assert result.not_ngsl_words == ["snapback"]
+
+
+def test_has_number():
+    assert ngsl._has_number('1st')
+    assert not ngsl._has_number('first')
+    assert ngsl._has_number('catch22')

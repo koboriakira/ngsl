@@ -4,11 +4,15 @@
   * Using this module, you can check if the word is NGSL or not, etc.
 """
 from typing import Optional, List
+from operator import itemgetter
+import re
 from ngsl.rank import RANK_DICT
 from ngsl.inverted_supplemental import INVERTED_SUPPLEMENTAL
 from ngsl.inverted_dictionary import INVERTED_DICTIONARY
 from ngsl.dictionary import DICTIONARY
 from ngsl.result import Result
+
+NUMBER = re.compile(r'\d')
 
 
 def include(word: str, include_supplemental: bool = False) -> bool:
@@ -58,18 +62,24 @@ def classify(words: List[str], include_supplemental: bool = False) -> Result:
     Returns:
         Result: Result has fields, ngsl_words, not_ngsl_words
     Example:
-        >>> ngsl.classify(["smile", "snapback"])
+        >>> ngsl.classify(["smiles", "snapback"])
             Result(ngsl_words=["smile"], not_ngsl_words=["snapback"])
     """
     ngsl_words, not_ngsl_words = [], []
     for word in words:
+        # 数値のある単語は無視
+        if _has_number(word):
+            continue
         if include(word=word, include_supplemental=include_supplemental):
-            ngsl_words.append([word, get_rank(word=word)])
+            infinitiv_word = get_infinitiv(
+                word=word, include_supplemental=include_supplemental)
+            ngsl_words.append([infinitiv_word, get_rank(word=infinitiv_word)])
         else:
             not_ngsl_words.append(word)
+    ngsl_words.sort(key=itemgetter(1))
     return Result(
-        ngsl_words=ngsl_words,
-        not_ngsl_words=not_ngsl_words)
+        ngsl_words=list(map(lambda el: el[0], ngsl_words)),
+        not_ngsl_words=sorted(not_ngsl_words))
 
 
 def get_infinitiv_list(
@@ -119,3 +129,7 @@ def get_rank(word: str) -> int:
             3
     """
     return RANK_DICT[word] if word in RANK_DICT else -1
+
+
+def _has_number(word: str) -> bool:
+    return NUMBER.search(word)
