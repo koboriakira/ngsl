@@ -24,7 +24,7 @@ def test_get_rank():
 
 
 def test_classify():
-    words = ["smiles", "and", "the", "snapback", "1st"]
+    words = ["snapback", "smiles", "and", "the", "snapback", "1st", "smiles"]
     result = ngsl.classify(words=words)
     assert result.ngsl_words == ["the", "and", "smile"]
     assert result.not_ngsl_words == ["snapback"]

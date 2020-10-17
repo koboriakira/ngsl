@@ -3,7 +3,7 @@
   * New Service General List(NGSL)
   * Using this module, you can check if the word is NGSL or not, etc.
 """
-from typing import Optional, List
+from typing import Optional, List, Dict
 from operator import itemgetter
 import re
 from ngsl.rank import RANK_DICT
@@ -65,21 +65,26 @@ def classify(words: List[str], include_supplemental: bool = False) -> Result:
         >>> ngsl.classify(["smiles", "snapback"])
             Result(ngsl_words=["smile"], not_ngsl_words=["snapback"])
     """
-    ngsl_words, not_ngsl_words = [], []
+    # NGSLの単語はランクにひもづけて管理
+    ngsl_words: Dict[int, str] = {}
+    # NGSLでない単語は、単語だけのリスト
+    not_ngsl_words: List[str] = []
     for word in words:
         # 数値のある単語は無視
         if _has_number(word):
             continue
         if include(word=word, include_supplemental=include_supplemental):
-            infinitiv_word = get_infinitiv(
+            infinitiv_word: str = get_infinitiv(
                 word=word, include_supplemental=include_supplemental)
-            ngsl_words.append([infinitiv_word, get_rank(word=infinitiv_word)])
+            rank: int = get_rank(word=infinitiv_word)
+            ngsl_words[rank] = infinitiv_word
         else:
             not_ngsl_words.append(word)
-    ngsl_words.sort(key=itemgetter(1))
+    score_ngsl_words: List[str] = sorted(
+        ngsl_words.items(), key=lambda x: x[0])
     return Result(
-        ngsl_words=list(map(lambda el: el[0], ngsl_words)),
-        not_ngsl_words=sorted(not_ngsl_words))
+        ngsl_words=list(map(lambda el: el[1], sorted(score_ngsl_words))),
+        not_ngsl_words=sorted(list(set(not_ngsl_words))))
 
 
 def get_infinitiv_list(
